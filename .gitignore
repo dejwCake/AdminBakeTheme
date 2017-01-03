@@ -1,0 +1,10 @@
+/vendor/*
+/tmp/*
+/logs/*
+
+/.idea
+/node_modules
+.env
+
+_ide_helper.php
+.phpstorm.meta.php
