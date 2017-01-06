@@ -19,15 +19,18 @@ class AdminModelTask extends ModelTask
     {
         $behaviors = parent::getBehaviors($model);
 
-        $schema = $model->schema();
-        $fields = $schema->columns();
+        $fields = $model->schema()->columns();
         if (in_array('deleted', $fields)) {
             $behaviors['Muffin/Trash.Trash'] = [];
         }
         if (!$this->param('no-translation')) {
             //TODO add more
             $translatableFields = ['title', 'text', 'short_text'];
-            $behaviors['Translate'] = ['fields' => array_intersect($fields, $translatableFields)];
+            $behaviors['Translate'] = [
+                '\'fields\' => [\''.implode('\',\'', array_intersect($fields, $translatableFields)).'\']',
+                '\'translationTable\' => \''.$model->alias().'I18n\'',
+                '\'validator\' => \'translated\'',
+            ];
         }
 
         return $behaviors;

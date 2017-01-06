@@ -61,7 +61,7 @@ class AdminControllerTask extends ControllerTask
             $data['enabling'] = true;
         }
 
-        $data['namespace'] .= '\\Admin';
+        $data['prefix'] = '\\Admin';
 
         return parent::bakeController($controllerName, $data);
     }

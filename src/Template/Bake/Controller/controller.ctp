@@ -23,7 +23,7 @@ $defaultModel = $name;
 <?php
 namespace <%= $namespace %>\Controller<%= $prefix %>;
 
-use <%= $namespace %>\Controller\AppController;
+use <%= $namespace %>\Controller<%= $prefix %>\AppController;
 use Cake\Network\Exception\BadRequestException;
 use Cake\Network\Exception\ConflictException;
 use Cake\Routing\Router;
@@ -39,7 +39,7 @@ foreach ($components as $component):
  * @property <%= $classInfo['fqn'] %> $<%= $classInfo['name'] %>
 <% endforeach; %>
  */
-class <%= $name %>Controller extends ApiController
+class <%= $name %>Controller extends AppController
 {
 <%
 echo $this->Bake->arrayProperty('helpers', $helpers, ['indent' => false]);
