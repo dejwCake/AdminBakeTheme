@@ -27,16 +27,29 @@ $compact = ["'" . $singularName . "'"];
      */
     public function edit($id = null)
     {
+<% if($translation): %>
+        $<%= $singularName %> = $this-><%= $currentModelName %>->find('translations', [
+            'contain' => [<%= $this->Bake->stringifyList($belongsToMany, ['indent' => false]) %>]
+        ])->where(['id' => $id])->firstOrFail();
+<% else: %>
         $<%= $singularName %> = $this-><%= $currentModelName %>->get($id, [
             'contain' => [<%= $this->Bake->stringifyList($belongsToMany, ['indent' => false]) %>]
         ]);
+<% endif %>
         if ($this->request->is(['patch', 'post', 'put'])) {
+<% if($translation): %>
+            $<%= $singularName %> = $this-><%= $currentModelName %>->patchEntity($<%= $singularName %>, $this->request->data, [
+                'translations' => true
+            ]);
+<% else: %>
             $<%= $singularName %> = $this-><%= $currentModelName %>->patchEntity($<%= $singularName %>, $this->request->data);
+<% endif %>
             if ($this-><%= $currentModelName; %>->save($<%= $singularName %>)) {
                 $this->Flash->success(__('The <%= strtolower($singularHumanName) %> has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
             } else {
+                Log::error('Entity could not be saved. Entity: '.var_export($<%= $singularName %>, true));
                 $this->Flash->error(__('The <%= strtolower($singularHumanName) %> could not be saved. Please, try again.'));
             }
         }
@@ -51,6 +64,9 @@ $compact = ["'" . $singularName . "'"];
             $compact[] = "'$otherPlural'";
         endforeach;
 %>
+<% if($translation): %>
+        $<%= $singularName %> = $this->editTranslated($<%= $singularName %>);
+<% endif %>
         $this->set(compact(<%= join(', ', $compact) %>));
         $this->set('_serialize', ['<%=$singularName%>']);
     }

@@ -1,21 +1,4 @@
 <%
-/**
- * Controller bake template file
- *
- * Allows templating of Controllers generated from bake.
- *
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- *
- * Licensed under The MIT License
- * For full copyright and license information, please see the LICENSE.txt
- * Redistributions of files must retain the above copyright notice.
- *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
- * @since         0.1.0
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
- */
 use Cake\Utility\Inflector;
 
 $defaultModel = $name;
@@ -27,6 +10,8 @@ use <%= $namespace %>\Controller<%= $prefix %>\AppController;
 use Cake\Network\Exception\BadRequestException;
 use Cake\Network\Exception\ConflictException;
 use Cake\Routing\Router;
+use Cake\Event\Event;
+use Cake\Log\Log;
 
 /**
  * <%= $name %> Controller
@@ -44,6 +29,19 @@ class <%= $name %>Controller extends AppController
 <%
 echo $this->Bake->arrayProperty('helpers', $helpers, ['indent' => false]);
 echo $this->Bake->arrayProperty('components', $components, ['indent' => false]);
+%>
+
+    /**
+     * Before filter callback.
+     *
+     * @param \Cake\Event\Event $event The beforeRender event.
+     * @return \Cake\Network\Response|null|void
+     */
+    public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+    }
+<%
 foreach($actions as $action) {
     echo $this->element('Controller/' . $action);
 }

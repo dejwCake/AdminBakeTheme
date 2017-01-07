@@ -40,8 +40,14 @@ if (!isset($fields) || $fields !== false) {
 namespace <%= $namespace %>\Model\Entity;
 
 use Cake\ORM\Entity;
+<% if ($password): %>
+use Cake\Auth\DefaultPasswordHasher;
+<% endif %>
 <% if (!empty($behaviors['Translate'])): %>
 use Cake\ORM\Behavior\Translate\TranslateTrait;
+<% endif %>
+<% if ($enabled): %>
+use DejwCake\StandardAuth\Model\Entity\Helper\EnableTrait;
 <% endif %>
 
 <%= $this->DocBlock->classDescription($name, 'Entity', $annotations) %>
@@ -49,6 +55,9 @@ class <%= $name %> extends Entity
 {
 <% if (!empty($behaviors['Translate'])): %>
     use TranslateTrait;
+<% endif %>
+<% if ($enabled): %>
+    use EnableTrait;
 <% endif %>
 <% if (!empty($accessible)): %>
 
@@ -71,6 +80,19 @@ class <%= $name %> extends Entity
      * @var array
      */
     protected $_hidden = [<%= $this->Bake->stringifyList($hidden) %>];
+<% endif %>
+<% if ($password): %>
+
+    /**
+     * Hash password before save
+     *
+     * @param $password
+     * @return bool|string
+     */
+    protected function _setPassword($password)
+    {
+        return (new DefaultPasswordHasher)->hash($password);
+    }
 <% endif %>
 <% if (empty($accessible) && empty($hidden)): %>
 

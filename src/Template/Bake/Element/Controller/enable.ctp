@@ -26,12 +26,7 @@
         $this->request->allowMethod(['post']);
         $<%= $singularName %> = $this-><%= $currentModelName %>->get($id);
 
-        if($<%= $singularName %>->get('enabled') == 1) {
-            $<%= $singularName %>->set('enabled', 0);
-        } else {
-            $<%= $singularName %>->set('enabled', 1);
-        }
-
+        $<%= $singularName %>->changeEnableStatus();
         if ($this-><%= $currentModelName; %>->save($<%= $singularName %>)) {
             $this->Flash->success(__('The <%= strtolower($singularHumanName) %> status has been changed.'));
         } else {

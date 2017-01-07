@@ -24,12 +24,19 @@ $compact = ["'" . $singularName . "'"];
     {
         $<%= $singularName %> = $this-><%= $currentModelName %>->newEntity();
         if ($this->request->is('post')) {
+<% if($translation): %>
+            $<%= $singularName %> = $this-><%= $currentModelName %>->patchEntity($<%= $singularName %>, $this->request->data, [
+                'translations' => true
+            ]);
+<% else: %>
             $<%= $singularName %> = $this-><%= $currentModelName %>->patchEntity($<%= $singularName %>, $this->request->data);
+<% endif %>
             if ($this-><%= $currentModelName; %>->save($<%= $singularName %>)) {
                 $this->Flash->success(__('The <%= strtolower($singularHumanName) %> has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
             } else {
+                Log::error('Entity could not be saved. Entity: '.var_export($<%= $singularName %>, true));
                 $this->Flash->error(__('The <%= strtolower($singularHumanName) %> could not be saved. Please, try again.'));
             }
         }

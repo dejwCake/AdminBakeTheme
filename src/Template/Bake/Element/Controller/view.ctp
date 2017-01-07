@@ -1,23 +1,13 @@
 <%
-/**
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- *
- * Licensed under The MIT License
- * For full copyright and license information, please see the LICENSE.txt
- * Redistributions of files must retain the above copyright notice.
- *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
- * @since         0.1.0
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
- */
 $allAssociations = array_merge(
     $this->Bake->aliasExtractor($modelObj, 'BelongsTo'),
     $this->Bake->aliasExtractor($modelObj, 'BelongsToMany'),
     $this->Bake->aliasExtractor($modelObj, 'HasOne'),
     $this->Bake->aliasExtractor($modelObj, 'HasMany')
 );
+$allAssociations = collection($allAssociations)->reject(function($association) {
+    return (strpos($association, 'I18n') !== false || strpos($association, '_translation') !== false);
+})->toArray();
 %>
 
     /**
@@ -29,9 +19,15 @@ $allAssociations = array_merge(
      */
     public function view($id = null)
     {
+<% if($translation): %>
+        $<%= $singularName%> = $this-><%= $currentModelName %>->find('translations', [
+            'contain' => [<%= $this->Bake->stringifyList($allAssociations, ['indent' => false]) %>]
+        ])->where(['id' => $id])->firstOrFail();
+<% else: %>
         $<%= $singularName%> = $this-><%= $currentModelName %>->get($id, [
             'contain' => [<%= $this->Bake->stringifyList($allAssociations, ['indent' => false]) %>]
         ]);
+<% endif %>
 
         $this->set('<%= $singularName %>', $<%= $singularName %>);
         $this->set('_serialize', ['<%= $singularName %>']);

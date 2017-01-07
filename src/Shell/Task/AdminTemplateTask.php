@@ -2,6 +2,8 @@
 namespace DejwCake\AdminBakeTheme\Shell\Task;
 
 use Bake\Shell\Task\TemplateTask;
+use Bake\Utility\Model\AssociationFilter;
+use Cake\ORM\Table;
 
 /**
  * AdminTemplate shell task.
@@ -27,5 +29,56 @@ class AdminTemplateTask extends TemplateTask
         //TODO remove translation associations from $associations
 
         parent::main($name, $template, $action);
+    }
+
+    /**
+     * Loads Controller and sets variables for the template
+     * Available template variables:
+     *
+     * - 'modelObject'
+     * - 'modelClass'
+     * - 'primaryKey'
+     * - 'displayField'
+     * - 'singularVar'
+     * - 'pluralVar'
+     * - 'singularHumanName'
+     * - 'pluralHumanName'
+     * - 'fields'
+     * - 'keyFields'
+     * - 'schema'
+     *
+     * @return array Returns variables to be made available to a view template
+     */
+    protected function _loadController()
+    {
+        $controller = parent::_loadController();
+        $controller['translateFields'] = [];
+        if($controller['modelObject']->behaviors()->has('Translate')) {
+            $controller['translateFields'] = $controller['modelObject']->behaviors()->get('Translate')->config('fields');
+        }
+
+        return $controller;
+    }
+
+    /**
+     * Get filtered associations
+     * To be mocked...
+     *
+     * @param \Cake\ORM\Table $model Table
+     * @return array associations
+     */
+    protected function _filteredAssociations(Table $model)
+    {
+        $associations = parent::_filteredAssociations($model);
+        $associations = collection($associations)->map(function($relationAssociations) {
+            return collection($relationAssociations)->reject(function($association) {
+                return ($association['property'] == '_i18n' || strpos($association['property'], '_translation') !== false);
+            })->toArray();
+        })->toArray();
+        $associations = collection($associations)->filter(function($relationAssociations) {
+            return count($relationAssociations);
+        })->toArray();
+
+        return $associations;
     }
 }

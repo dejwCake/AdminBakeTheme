@@ -2,12 +2,57 @@
 namespace DejwCake\AdminBakeTheme\Shell\Task;
 
 use Bake\Shell\Task\ModelTask;
+use Cake\ORM\Table;
 
 /**
  * AdminModel shell task.
  */
 class AdminModelTask extends ModelTask
 {
+
+    /**
+     * Get table context for baking a given table.
+     *
+     * @param \Cake\ORM\Table $tableObject The model name to generate.
+     * @param string $table The table name for the model being baked.
+     * @param string $name The model name to generate.
+     * @return array
+     */
+    public function getTableContext($tableObject, $table, $name)
+    {
+        $tableContext = parent::getTableContext($tableObject, $table, $name);
+        $tableContext['enabled'] = false;
+        $tableContext['password'] = false;
+        foreach ($tableObject->schema()->columns() as $column) {
+            if($column == 'enabled') {
+                $tableContext['enabled'] = true;
+            }
+            if($column == 'password') {
+                $tableContext['password'] = true;
+            }
+        }
+        return $tableContext;
+    }
+
+    /**
+     * Get the array of associations to generate.
+     *
+     * @param \Cake\ORM\Table $table The table to get associations for.
+     * @return array
+     */
+    public function getAssociations(Table $table)
+    {
+        $associations = parent::getAssociations($table);
+        $associations = collection($associations)->map(function($relationAssociations) {
+            return collection($relationAssociations)->reject(function($association) {
+                return (strpos($association['alias'], 'I18n') !== false);
+            })->toArray();
+        })->toArray();
+        $associations = collection($associations)->filter(function($relationAssociations) {
+            return count($relationAssociations);
+        })->toArray();
+        return $associations;
+    }
 
     /**
      * Get behaviors
@@ -29,7 +74,6 @@ class AdminModelTask extends ModelTask
             $behaviors['Translate'] = [
                 '\'fields\' => [\''.implode('\',\'', array_intersect($fields, $translatableFields)).'\']',
                 '\'translationTable\' => \''.$model->alias().'I18n\'',
-                '\'validator\' => \'translated\'',
             ];
         }
 
