@@ -30,6 +30,9 @@ use Cake\Utility\Inflector;
                     <?php
 <%
                     foreach ($fields as $field) {
+                        if(in_array($field, $skipKeyFields)) {
+                            continue;
+                        }
                         if(!in_array($field, $translateFields)) {
                             if (in_array($field, $primaryKey)) {
                                 continue;

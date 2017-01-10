@@ -24,6 +24,7 @@ $compact = ["'" . $singularName . "'"];
     {
         $<%= $singularName %> = $this-><%= $currentModelName %>->newEntity();
         if ($this->request->is('post')) {
+            $this->request->data('created_by', $this->Auth->user('id'));
 <% if($translation): %>
             $<%= $singularName %> = $this-><%= $currentModelName %>->patchEntity($<%= $singularName %>, $this->request->data, [
                 'translations' => true
@@ -41,18 +42,21 @@ $compact = ["'" . $singularName . "'"];
             }
         }
 <%
+
         $associations = array_merge(
             $this->Bake->aliasExtractor($modelObj, 'BelongsTo'),
             $this->Bake->aliasExtractor($modelObj, 'BelongsToMany')
         );
         foreach ($associations as $assoc):
             $association = $modelObj->association($assoc);
-            $otherName = $association->target()->alias();
-            $otherPlural = $this->_variableName($otherName);
+            if(!in_array($association->foreignKey(), $skipAssociations)):
+                $otherName = $association->target()->alias();
+                $otherPlural = $this->_variableName($otherName);
 %>
         $<%= $otherPlural %> = $this-><%= $currentModelName %>-><%= $otherName %>->find('list', ['limit' => 200]);
 <%
-            $compact[] = "'$otherPlural'";
+                $compact[] = "'$otherPlural'";
+            endif;
         endforeach;
 %>
         $this->set(compact(<%= join(', ', $compact) %>));

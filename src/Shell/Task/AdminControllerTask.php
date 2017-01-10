@@ -49,6 +49,8 @@ class AdminControllerTask extends ControllerTask
             'translation' => !$this->param('no-translation'),
             'sorting' => false,
             'enabling' => false,
+            'createdBy' => false,
+            'skipAssociations' => [],
         ];
         $modelObj = $data['modelObj'];
 
@@ -59,6 +61,10 @@ class AdminControllerTask extends ControllerTask
         if(!in_array('enable', $data['actions']) && in_array('enabled', $modelObj->schema()->columns())) {
             $data['actions'][] = 'enable';
             $data['enabling'] = true;
+        }
+        if(in_array('created_by', $modelObj->schema()->columns())) {
+            $data['createdBy'] = true;
+            $data['skipAssociations'][] = 'created_by';
         }
 
         $data['prefix'] = '\\Admin';

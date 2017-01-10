@@ -3,6 +3,7 @@ namespace DejwCake\AdminBakeTheme\Shell\Task;
 
 use Bake\Shell\Task\ModelTask;
 use Cake\ORM\Table;
+use Cake\Utility\Inflector;
 
 /**
  * AdminModel shell task.
@@ -68,9 +69,10 @@ class AdminModelTask extends ModelTask
         if (in_array('deleted', $fields)) {
             $behaviors['Muffin/Trash.Trash'] = [];
         }
-        if (!$this->param('no-translation')) {
-            //TODO add more
-            $translatableFields = ['title', 'text', 'short_text'];
+
+        //TODO add more
+        $translatableFields = ['title', 'text', 'short_text'];
+        if (!$this->param('no-translation') && !empty(array_intersect($fields, $translatableFields))) {
             $behaviors['Translate'] = [
                 '\'fields\' => [\''.implode('\',\'', array_intersect($fields, $translatableFields)).'\']',
                 '\'translationTable\' => \''.$model->alias().'I18n\'',
@@ -78,6 +80,44 @@ class AdminModelTask extends ModelTask
         }
 
         return $behaviors;
+    }
+
+    /**
+     * Find belongsTo relations and add them to the associations list.
+     *
+     * @param \Cake\ORM\Table $model Database\Table instance of table being generated.
+     * @param array $associations Array of in progress associations
+     * @return array Associations with belongsTo added in.
+     */
+    public function findBelongsTo($model, array $associations)
+    {
+        $associations = parent::findBelongsTo($model, $associations);
+        $schema = $model->schema();
+        foreach ($schema->columns() as $fieldName) {
+            if ($fieldName === 'created_by') {
+                $tmpModelName = $this->_modelNameFromKey('user_id');
+                if (!in_array(Inflector::tableize($tmpModelName), $this->_tables)) {
+                    $found = $this->findTableReferencedBy($schema, 'user_id');
+                    if ($found) {
+                        $tmpModelName = Inflector::camelize($found);
+                    }
+                }
+                $assoc = [
+                    'alias' => $tmpModelName,
+                    'foreignKey' => $fieldName
+                ];
+
+                if ($schema->column($fieldName)['null'] === false) {
+                    $assoc['joinType'] = 'INNER';
+                }
+
+                if ($this->plugin && empty($assoc['className'])) {
+                    $assoc['className'] = $assoc['alias'];
+                }
+                $associations['belongsTo'][] = $assoc;
+            }
+        }
+        return $associations;
     }
 
     /**

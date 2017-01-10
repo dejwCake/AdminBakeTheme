@@ -56,12 +56,14 @@ $compact = ["'" . $singularName . "'"];
 <%
         foreach (array_merge($belongsTo, $belongsToMany) as $assoc):
             $association = $modelObj->association($assoc);
-            $otherName = $association->target()->alias();
-            $otherPlural = $this->_variableName($otherName);
+            if(!in_array($association->foreignKey(), $skipAssociations)):
+                $otherName = $association->target()->alias();
+                $otherPlural = $this->_variableName($otherName);
 %>
         $<%= $otherPlural %> = $this-><%= $currentModelName %>-><%= $otherName %>->find('list', ['limit' => 200]);
 <%
-            $compact[] = "'$otherPlural'";
+                $compact[] = "'$otherPlural'";
+            endif;
         endforeach;
 %>
 <% if($translation): %>

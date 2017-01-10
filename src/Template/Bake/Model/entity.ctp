@@ -47,7 +47,7 @@ use Cake\Auth\DefaultPasswordHasher;
 use Cake\ORM\Behavior\Translate\TranslateTrait;
 <% endif %>
 <% if ($enabled): %>
-use DejwCake\StandardAuth\Model\Entity\Helper\EnableTrait;
+use DejwCake\Helpers\Model\Entity\EnableTrait;
 <% endif %>
 
 <%= $this->DocBlock->classDescription($name, 'Entity', $annotations) %>

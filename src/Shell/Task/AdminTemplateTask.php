@@ -57,6 +57,13 @@ class AdminTemplateTask extends TemplateTask
             $controller['translateFields'] = $controller['modelObject']->behaviors()->get('Translate')->config('fields');
         }
 
+        $controller['skipKeyFields'] = [];
+        foreach ($controller['keyFields'] as $field => $keyField) {
+            if($field == 'created_by') {
+                $controller['skipKeyFields'][] = $field;
+            }
+        }
+
         return $controller;
     }
 

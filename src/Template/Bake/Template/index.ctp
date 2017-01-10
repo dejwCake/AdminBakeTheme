@@ -16,6 +16,10 @@ $fields = $fields->reject(function ($field) {
     return in_array($field, ['password', 'remember_token', 'deleted']);
 });
 
+$fields = $fields->reject(function ($field) use ($skipKeyFields) {
+    return in_array($field, $skipKeyFields)
+});
+
 if (!empty($indexColumns)) {
     $fields = $fields->take($indexColumns);
 }

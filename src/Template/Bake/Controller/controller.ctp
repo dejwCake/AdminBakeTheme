@@ -41,7 +41,21 @@ echo $this->Bake->arrayProperty('components', $components, ['indent' => false]);
     {
         parent::beforeFilter($event);
     }
-<%
+
+    /**
+     * Check if the provided user is authorized for the request.
+     *
+     * @param array|\ArrayAccess|null $user The user to check the authorization of.
+     *   If empty the user fetched from storage will be used.
+     * @param \Cake\Network\Request|null $request The request to authenticate for.
+     *   If empty, the current request will be used.
+     * @return bool True if $user is authorized, otherwise false
+     */
+    public function isAuthorized($user = null) {
+        return parent::isAuthorized($user);;
+    }
+
+    <%
 foreach($actions as $action) {
     echo $this->element('Controller/' . $action);
 }
