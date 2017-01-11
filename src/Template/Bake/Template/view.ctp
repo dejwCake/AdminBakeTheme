@@ -17,8 +17,8 @@ $associationFields = collection($fields)
     }, []);
 
 $groupedFields = collection($fields)
-    ->filter(function($field) use ($schema) {
-        return $schema->columnType($field) !== 'binary';
+    ->filter(function($field) use ($schema, $skipViewFields) {
+        return $schema->columnType($field) !== 'binary' &&!in_array($field, $skipViewFields);
     })
     ->groupBy(function($field) use ($schema, $associationFields) {
         $type = $schema->columnType($field);
@@ -137,12 +137,28 @@ $hidden = ['password', 'remember_token'];
                         
                     if ($groupedFields['text']) :
                         foreach ($groupedFields['text'] as $field) :
+                            if (in_array($field, $translateFields)) :
+%>
+                    <dt><?= __('<%= Inflector::humanize($field) %> ({0})', $supportedLanguages[$defaultLanguage]['title']) ?></dt>
+                    <dd>
+                        <?= h($<%= $singularVar %>-><%= $field %>) ?>
+                    </dd>
+                    <?php foreach ($supportedLanguages as $language => $languageSettings): ?>
+                        <?php if($languageSettings['locale'] == $defaultLocale) { continue; } ?>
+                    <dt><?= __('<%= Inflector::humanize($field) %> ({0})', $languageSettings['title']) ?></dt>
+                    <dd>
+                        <?= $this->Text->autoParagraph(h($<%= $singularVar %>->translation($languageSettings['locale'])-><%= $field %>)) ?>
+                    </dd>
+                    <?php endforeach; ?>
+<%
+                            elseif (!in_array($field, $hidden)) :
 %>
                     <dt><?= __('<%= Inflector::humanize($field) %>') ?></dt>
                     <dd>
                         <?= $this->Text->autoParagraph(h($<%= $singularVar %>-><%= $field %>)); ?>
                     </dd>
 <%
+                            endif;
                         endforeach;
                     endif;
 

@@ -11,6 +11,10 @@ use Cake\ORM\Table;
 class AdminTemplateTask extends TemplateTask
 {
 
+    protected $skipFormFields = ['created_by', 'entity_id', 'entity_class'];
+    protected $skipIndexFields = ['created_by', 'entity_id', 'entity_class'];
+    protected $skipViewFields = [];
+
     /**
      * Execution method always used for tasks
      *
@@ -57,10 +61,18 @@ class AdminTemplateTask extends TemplateTask
             $controller['translateFields'] = $controller['modelObject']->behaviors()->get('Translate')->config('fields');
         }
 
-        $controller['skipKeyFields'] = [];
-        foreach ($controller['keyFields'] as $field => $keyField) {
-            if($field == 'created_by') {
-                $controller['skipKeyFields'][] = $field;
+        $controller['skipFormFields'] = [];
+        $controller['skipIndexFields'] = [];
+        $controller['skipViewFields'] = [];
+        foreach ($controller['fields'] as $field) {
+            if(in_array($field, $this->skipFormFields)) {
+                $controller['skipFormFields'][] = $field;
+            }
+            if(in_array($field, $this->skipIndexFields)) {
+                $controller['skipIndexFields'][] = $field;
+            }
+            if(in_array($field, $this->skipViewFields)) {
+                $controller['skipViewFields'][] = $field;
             }
         }
 

@@ -87,8 +87,10 @@ class <%= $name %>Table extends Table
 <% foreach ($assocs as $assoc):
 	$alias = $assoc['alias'];
 	unset($assoc['alias']);
+	if(!in_array($alias, $skipAssociations)):
 %>
         $this-><%= $type %>('<%= $alias %>', [<%= $this->Bake->stringifyList($assoc, ['indent' => 3]) %>]);
+<% endif %>
 <% endforeach %>
 <% endforeach %>
     }
@@ -102,6 +104,19 @@ class <%= $name %>Table extends Table
      */
     public function validationDefault(Validator $validator)
     {
+<% if(!empty($translationValidation)): %>
+        $translationValidator = new Validator();
+<% foreach ($translationValidation as $field => $validationMethods):
+    $lastIndex = count($validationMethods) - 1;
+    $validationMethods[$lastIndex] .= ';';
+%>
+        $translationValidator
+        <%- foreach ($validationMethods as $validationMethod): %>
+            <%= $validationMethod %>
+        <%- endforeach; %>
+<% endforeach; %>
+<% endif; %>
+
 <%
 foreach ($validation as $field => $rules):
     $validationMethods = [];
@@ -115,6 +130,22 @@ foreach ($validation as $field => $rules):
                 $ruleName,
                 $rule['rule'],
                 $rule['provider']
+            );
+        endif;
+
+        if(isset($rule['addNestedMany'])):
+            $validationMethods[] = sprintf(
+                "->addNestedMany('%s', %s)",
+                $field,
+                $rule['addNestedMany']
+            );
+        endif;
+
+        if(isset($rule['requirePresence'])):
+            $validationMethods[] = sprintf(
+                "->requirePresence('%s', '%s')",
+                $field,
+                $rule['requirePresence']
             );
         endif;
 

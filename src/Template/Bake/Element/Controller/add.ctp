@@ -24,7 +24,9 @@ $compact = ["'" . $singularName . "'"];
     {
         $<%= $singularName %> = $this-><%= $currentModelName %>->newEntity();
         if ($this->request->is('post')) {
+<% if($createdBy): %>
             $this->request->data('created_by', $this->Auth->user('id'));
+<% endif %>
 <% if($translation): %>
             $<%= $singularName %> = $this-><%= $currentModelName %>->patchEntity($<%= $singularName %>, $this->request->data, [
                 'translations' => true

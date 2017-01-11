@@ -50,6 +50,7 @@ class AdminControllerTask extends ControllerTask
             'sorting' => false,
             'enabling' => false,
             'createdBy' => false,
+            'slug' => false,
             'skipAssociations' => [],
         ];
         $modelObj = $data['modelObj'];
@@ -65,6 +66,9 @@ class AdminControllerTask extends ControllerTask
         if(in_array('created_by', $modelObj->schema()->columns())) {
             $data['createdBy'] = true;
             $data['skipAssociations'][] = 'created_by';
+        }
+        if(in_array('slug', $modelObj->schema()->columns())) {
+            $data['slug'] = true;
         }
 
         $data['prefix'] = '\\Admin';

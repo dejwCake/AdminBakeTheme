@@ -11,6 +11,13 @@ use Cake\Utility\Inflector;
 class AdminModelTask extends ModelTask
 {
 
+    protected $skipAssociations = ['entity_id'];
+    protected $skipRules = ['entity_id'];
+    protected $skipValidations = ['deleted', 'sort', 'enabled', 'entity_class', 'entity_id'];
+    //TODO add more
+    protected $translatableFields = ['title', 'slug','text', 'short_text', 'description', 'keywords', 'perex'];
+    protected $translateFields = null;
+
     /**
      * Get table context for baking a given table.
      *
@@ -22,6 +29,8 @@ class AdminModelTask extends ModelTask
     public function getTableContext($tableObject, $table, $name)
     {
         $tableContext = parent::getTableContext($tableObject, $table, $name);
+
+        //set some variables
         $tableContext['enabled'] = false;
         $tableContext['password'] = false;
         foreach ($tableObject->schema()->columns() as $column) {
@@ -30,6 +39,36 @@ class AdminModelTask extends ModelTask
             }
             if($column == 'password') {
                 $tableContext['password'] = true;
+            }
+        }
+
+        //set skipping associations as entity_id
+        $tableContext['skipAssociations'] = [];
+        foreach ($tableContext['associations'] as $type => $assocs) {
+            foreach ($assocs as $assoc) {
+                if(in_array($assoc['foreignKey'], $this->skipAssociations)) {
+                    $tableContext['skipAssociations'][] = $assoc['alias'];
+                }
+            }
+        }
+
+        //Adding translate validation
+        if(!empty($this->translateFields)) {
+            $tableContext['validation']['_translations'] = [
+                'valid' => [
+                    'rule' => false,
+                    'addNestedMany' => '$translationValidator',
+                    'requirePresence' => 'false',
+                    'allowEmpty' => true,
+                ]
+            ];
+
+            $tableContext['translationValidation'] = [];
+            foreach ($this->translateFields as $translateField) {
+                $tableContext['translationValidation'][$translateField][] =
+                    sprintf("->requirePresence('%s', '%s')", $translateField, 'create');
+                $tableContext['translationValidation'][$translateField][] =
+                    sprintf("->allowEmpty('%s')", $translateField);
             }
         }
         return $tableContext;
@@ -69,12 +108,14 @@ class AdminModelTask extends ModelTask
         if (in_array('deleted', $fields)) {
             $behaviors['Muffin/Trash.Trash'] = [];
         }
+        if (in_array('slug', $fields)) {
+            $behaviors['DejwCake/Helpers.Sluggable'] = [];
+        }
 
-        //TODO add more
-        $translatableFields = ['title', 'text', 'short_text'];
-        if (!$this->param('no-translation') && !empty(array_intersect($fields, $translatableFields))) {
+        if (!$this->param('no-translation') && !empty(array_intersect($fields, $this->translatableFields))) {
+            $this->translateFields = array_intersect($fields, $this->translatableFields);
             $behaviors['Translate'] = [
-                '\'fields\' => [\''.implode('\',\'', array_intersect($fields, $translatableFields)).'\']',
+                '\'fields\' => [\''.implode('\', \'', $this->translateFields).'\']',
                 '\'translationTable\' => \''.$model->alias().'I18n\'',
             ];
         }
@@ -93,6 +134,8 @@ class AdminModelTask extends ModelTask
     {
         $associations = parent::findBelongsTo($model, $associations);
         $schema = $model->schema();
+
+        //Add association on field created_by, which is user_id
         foreach ($schema->columns() as $fieldName) {
             if ($fieldName === 'created_by') {
                 $tmpModelName = $this->_modelNameFromKey('user_id');
@@ -131,12 +174,47 @@ class AdminModelTask extends ModelTask
      */
     public function fieldValidation($schema, $fieldName, array $metaData, $primaryKey)
     {
-        $ignoreFields = ['deleted', 'sort', 'enabled'];
-        if (in_array($fieldName, $ignoreFields)) {
+        if (in_array($fieldName, $this->skipValidations)) {
             return false;
         }
 
         return parent::fieldValidation($schema, $fieldName, $metaData, $primaryKey);
+    }
+
+    /**
+     * Generate default validation rules.
+     *
+     * @param \Cake\ORM\Table $model The model to introspect.
+     * @param array $associations The associations list.
+     * @return array The validation rules.
+     */
+    public function getValidation($model, $associations = [])
+    {
+        $validate =parent::getValidation($model,$associations);
+
+
+
+        return $validate;
+    }
+
+    /**
+     * Generate default rules checker.
+     *
+     * @param \Cake\ORM\Table $model The model to introspect.
+     * @param array $associations The associations for the model.
+     * @return array The rules to be applied.
+     */
+    public function getRules($model, array $associations)
+    {
+        $rules = parent::getRules($model, $associations);
+        foreach ($rules as $key => $rule) {
+            if(in_array($key, $this->skipRules)) {
+                unset($rules[$key]);
+            }
+        }
+
+        //TODO add deleted unique constrain
+        return $rules;
     }
 
     /**

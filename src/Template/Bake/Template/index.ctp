@@ -16,8 +16,8 @@ $fields = $fields->reject(function ($field) {
     return in_array($field, ['password', 'remember_token', 'deleted']);
 });
 
-$fields = $fields->reject(function ($field) use ($skipKeyFields) {
-    return in_array($field, $skipKeyFields)
+$fields = $fields->reject(function ($field) use ($skipIndexFields) {
+    return in_array($field, $skipIndexFields);
 });
 
 if (!empty($indexColumns)) {
@@ -46,7 +46,7 @@ $booleans = collection($fields)->filter(function($field) use ($schema) {
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body">
-                    <table id="<%= strtolower($pluralHumanName)%>Table" class="table table-bordered table-hover">
+                    <table id="<%= $pluralVar%>Table" class="table table-bordered table-hover">
                         <thead>
                             <tr>
 <%
@@ -172,7 +172,7 @@ $booleans = collection($fields)->filter(function($field) use ($schema) {
 <?php echo $this->Html->script('DejwCake/AdminLTE./plugins/datatables/dataTables.bootstrap.min.js'); ?>
     <script>
         $(function () {
-            $('#<%= strtolower($pluralHumanName)%>Table').DataTable({
+            $('#<%= $pluralVar%>Table').DataTable({
                 "paging": true,
                 "lengthChange": false,
                 "searching": true,
