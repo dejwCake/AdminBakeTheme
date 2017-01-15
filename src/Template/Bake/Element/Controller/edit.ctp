@@ -30,7 +30,7 @@ $compact = ["'" . $singularName . "'"];
 <% if($translation): %>
         $<%= $singularName %> = $this-><%= $currentModelName %>->find('translations', [
             'contain' => [<%= $this->Bake->stringifyList($belongsToMany, ['indent' => false]) %>]
-        ])->where(['id' => $id])->firstOrFail();
+        ])->where(['<%= $currentModelName %>.id' => $id])->firstOrFail();
 <% else: %>
         $<%= $singularName %> = $this-><%= $currentModelName %>->get($id, [
             'contain' => [<%= $this->Bake->stringifyList($belongsToMany, ['indent' => false]) %>]
@@ -66,9 +66,6 @@ $compact = ["'" . $singularName . "'"];
             endif;
         endforeach;
 %>
-<% if($translation): %>
-        $<%= $singularName %> = $this->editTranslated($<%= $singularName %>);
-<% endif %>
         $this->set(compact(<%= join(', ', $compact) %>));
         $this->set('_serialize', ['<%=$singularName%>']);
     }

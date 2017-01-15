@@ -141,13 +141,13 @@ $hidden = ['password', 'remember_token'];
 %>
                     <dt><?= __('<%= Inflector::humanize($field) %> ({0})', $supportedLanguages[$defaultLanguage]['title']) ?></dt>
                     <dd>
-                        <?= h($<%= $singularVar %>-><%= $field %>) ?>
+                        <?= $this->Text->autoParagraph($<%= $singularVar %>-><%= $field %>) ?>
                     </dd>
                     <?php foreach ($supportedLanguages as $language => $languageSettings): ?>
                         <?php if($languageSettings['locale'] == $defaultLocale) { continue; } ?>
                     <dt><?= __('<%= Inflector::humanize($field) %> ({0})', $languageSettings['title']) ?></dt>
                     <dd>
-                        <?= $this->Text->autoParagraph(h($<%= $singularVar %>->translation($languageSettings['locale'])-><%= $field %>)) ?>
+                        <?= $this->Text->autoParagraph($<%= $singularVar %>->translation($languageSettings['locale'])-><%= $field %>) ?>
                     </dd>
                     <?php endforeach; ?>
 <%
@@ -155,7 +155,7 @@ $hidden = ['password', 'remember_token'];
 %>
                     <dt><?= __('<%= Inflector::humanize($field) %>') ?></dt>
                     <dd>
-                        <?= $this->Text->autoParagraph(h($<%= $singularVar %>-><%= $field %>)); ?>
+                        <?= $this->Text->autoParagraph($<%= $singularVar %>-><%= $field %>); ?>
                     </dd>
 <%
                             endif;

@@ -22,7 +22,7 @@ $allAssociations = collection($allAssociations)->reject(function($association) {
 <% if($translation): %>
         $<%= $singularName%> = $this-><%= $currentModelName %>->find('translations', [
             'contain' => [<%= $this->Bake->stringifyList($allAssociations, ['indent' => false]) %>]
-        ])->where(['id' => $id])->firstOrFail();
+        ])->where(['<%= $currentModelName %>.id' => $id])->firstOrFail();
 <% else: %>
         $<%= $singularName%> = $this-><%= $currentModelName %>->get($id, [
             'contain' => [<%= $this->Bake->stringifyList($allAssociations, ['indent' => false]) %>]

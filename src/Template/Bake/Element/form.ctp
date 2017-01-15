@@ -1,5 +1,7 @@
 <%
 use Cake\Utility\Inflector;
+
+$ckeditor = false;
 %>
 <section class="content-header">
     <h1>
@@ -30,37 +32,40 @@ use Cake\Utility\Inflector;
                     <?php
 <%
                     foreach ($fields as $field) {
-                        if(in_array($field, $skipFormFields)) {
+                        if(in_array($field, $skipFormFields) || in_array($field, $translateFields)) {
                             continue;
                         }
-                        if(!in_array($field, $translateFields)) {
-                            if (in_array($field, $primaryKey)) {
-                                continue;
-                            }
-                            if (isset($keyFields[$field])) {
-                                $fieldData = $schema->column($field);
-                                if (!empty($fieldData['null'])) {
+                        if (in_array($field, $primaryKey)) {
+                            continue;
+                        }
+                        if (isset($keyFields[$field])) {
+                            $fieldData = $schema->column($field);
+                            if (!empty($fieldData['null'])) {
 %>
                         echo $this->Form->input('<%= $field %>', ['options' => $<%= $keyFields[$field] %>, 'empty' => true]);
 <%
-                                } else {
+                            } else {
 %>
                         echo $this->Form->input('<%= $field %>', ['options' => $<%= $keyFields[$field] %>]);
 <%
-                                }
-                                continue;
                             }
-                            if (!in_array($field, ['created', 'modified', 'updated', 'deleted', 'remember_token'])) {
-                                $fieldData = $schema->column($field);
-                                if (($fieldData['type'] === 'date') && (!empty($fieldData['null']))) {
+                            continue;
+                        }
+                        if (!in_array($field, ['created', 'modified', 'updated', 'deleted', 'remember_token'])) {
+                            $fieldData = $schema->column($field);
+                            if (($fieldData['type'] === 'date') && (!empty($fieldData['null']))) {
 %>
                         echo $this->Form->input('<%= $field %>', ['empty' => true, 'default' => '']);
 <%
-                                } else {
+                            } else if(in_array($fieldData['type'], ['text'])) {
+                                $ckeditor = true;
+%>
+                        echo $this->Form->input('<%= $field %>', ['class' => 'ckeditor']);
+<%
+                            } else {
 %>
                         echo $this->Form->input('<%= $field %>');
 <%
-                                }
                             }
                         }
                     }
@@ -84,8 +89,12 @@ use Cake\Utility\Inflector;
                             <div class="tab-pane <?php if ($selectedLanguage == $language): ?>active<?php endif; ?>"
                                  id="tab_<?= $i ?>">
                                 <?php
+                                    if($languageSettings['locale'] == $defaultLocale){
 <%
                                 foreach ($fields as $field) {
+                                    if(in_array($field, $skipFormFields)) {
+                                        continue;
+                                    }
                                     if(in_array($field, $translateFields)) {
                                         if (in_array($field, $primaryKey)) {
                                             continue;
@@ -94,11 +103,11 @@ use Cake\Utility\Inflector;
                                             $fieldData = $schema->column($field);
                                             if (!empty($fieldData['null'])) {
 %>
-                                    echo $this->Form->input('_translations.' . $languageSettings['locale'] . '.<%= $field %>', ['options' => $<%= $keyFields[$field] %>, 'empty' => true]);
+                                        echo $this->Form->input('<%= $field %>', ['options' => $<%= $keyFields[$field] %>, 'empty' => true]);
 <%
                                             } else {
 %>
-                                    echo $this->Form->input('_translations.' . $languageSettings['locale'] . '.<%= $field %>', ['options' => $<%= $keyFields[$field] %>]);
+                                        echo $this->Form->input('<%= $field %>', ['options' => $<%= $keyFields[$field] %>]);
 <%
                                             }
                                             continue;
@@ -107,17 +116,66 @@ use Cake\Utility\Inflector;
                                             $fieldData = $schema->column($field);
                                             if (($fieldData['type'] === 'date') && (!empty($fieldData['null']))) {
 %>
-                                    echo $this->Form->input('_translations.' . $languageSettings['locale'] . '.<%= $field %>', ['empty' => true, 'default' => '']);
+                                        echo $this->Form->input('<%= $field %>', ['empty' => true, 'default' => '']);
+<%
+                                            } else if(in_array($fieldData['type'], ['text'])) {
+                                                $ckeditor = true;
+%>
+                                        echo $this->Form->input('<%= $field %>', ['class' => 'ckeditor']);
 <%
                                             } else {
 %>
-                                    echo $this->Form->input('_translations.' . $languageSettings['locale'] . '.<%= $field %>');
+                                        echo $this->Form->input('<%= $field %>');
 <%
                                             }
                                         }
                                     }
                                 }
 %>
+                                    } else {
+<%
+                                foreach ($fields as $field) {
+                                    if(in_array($field, $skipFormFields)) {
+                                        continue;
+                                    }
+                                    if(in_array($field, $translateFields)) {
+                                        if (in_array($field, $primaryKey)) {
+                                            continue;
+                                        }
+                                        if (isset($keyFields[$field])) {
+                                            $fieldData = $schema->column($field);
+                                            if (!empty($fieldData['null'])) {
+%>
+                                        echo $this->Form->input('_translations.' . $languageSettings['locale'] . '.<%= $field %>', ['options' => $<%= $keyFields[$field] %>, 'empty' => true]);
+<%
+                                            } else {
+%>
+                                        echo $this->Form->input('_translations.' . $languageSettings['locale'] . '.<%= $field %>', ['options' => $<%= $keyFields[$field] %>]);
+<%
+                                            }
+                                            continue;
+                                        }
+                                        if (!in_array($field, ['created', 'modified', 'updated', 'deleted'])) {
+                                            $fieldData = $schema->column($field);
+                                            if (($fieldData['type'] === 'date') && (!empty($fieldData['null']))) {
+%>
+                                        echo $this->Form->input('_translations.' . $languageSettings['locale'] . '.<%= $field %>', ['empty' => true, 'default' => '']);
+<%
+                                            } else if(in_array($fieldData['type'], ['text'])) {
+                                                $ckeditor = true;
+%>
+                                        echo $this->Form->input('_translations.' . $languageSettings['locale'] . '.<%= $field %>', ['class' => 'ckeditor']);
+<%
+                                            } else {
+%>
+                                        echo $this->Form->input('_translations.' . $languageSettings['locale'] . '.<%= $field %>');
+<%
+                                            }
+                                        }
+                                    }
+                                }
+%>
+                                    }
                                 ?>
                             </div>
                             <?php $i++; ?>
@@ -158,6 +216,18 @@ use Cake\Utility\Inflector;
 <?php $this->start('scriptBottom'); ?>
 <?php echo $this->Html->script('DejwCake/AdminLTE./plugins/iCheck/icheck.min.js'); ?>
 <?php echo $this->Html->script('DejwCake/AdminLTE./plugins/select2/select2.full.min.js'); ?>
+<%
+    if($ckeditor) {
+%>
+<?php echo $this->Html->script('https://cdn.ckeditor.com/4.5.7/standard/ckeditor.js'); ?>
+    <script type="text/javascript">
+        $(function () {
+            CKEDITOR.replaceAll('ckeditor');
+        });
+    </script>
+<%
+    }
+%>
     <script type="text/javascript">
         $(".select2").select2();
         $(function () {

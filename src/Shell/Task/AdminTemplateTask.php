@@ -11,7 +11,7 @@ use Cake\ORM\Table;
 class AdminTemplateTask extends TemplateTask
 {
 
-    protected $skipFormFields = ['created_by', 'entity_id', 'entity_class'];
+    protected $skipFormFields = ['created_by', 'entity_id', 'entity_class', 'slug'];
     protected $skipIndexFields = ['created_by', 'entity_id', 'entity_class'];
     protected $skipViewFields = [];
 
