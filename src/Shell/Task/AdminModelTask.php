@@ -4,6 +4,7 @@ namespace DejwCake\AdminBakeTheme\Shell\Task;
 use Bake\Shell\Task\ModelTask;
 use Cake\ORM\Table;
 use Cake\Utility\Inflector;
+use Cake\Database\Schema\Table as SchemaTable;
 
 /**
  * AdminModel shell task.
@@ -13,7 +14,7 @@ class AdminModelTask extends ModelTask
 
     protected $skipAssociations = ['entity_id'];
     protected $skipRules = ['entity_id'];
-    protected $skipValidations = ['deleted', 'sort', 'enabled', 'entity_class', 'entity_id'];
+    protected $skipValidations = ['deleted', 'sort', 'enabled', 'entity_class', 'entity_id', 'slug'];
     //TODO add more
     protected $translatableFields = ['title', 'slug','text', 'short_text', 'description', 'keywords', 'perex'];
     protected $translateFields = null;
@@ -30,15 +31,25 @@ class AdminModelTask extends ModelTask
     {
         $tableContext = parent::getTableContext($tableObject, $table, $name);
 
+        $associations = $this->getAssociations($tableObject);
+        $tableContext['multiRules'] = $this->getMultiRules($tableObject, $associations);
         //set some variables
         $tableContext['enabled'] = false;
+        $tableContext['enabledInLocales'] = false;
         $tableContext['password'] = false;
+        $tableContext['view'] = false;
         foreach ($tableObject->schema()->columns() as $column) {
             if($column == 'enabled') {
                 $tableContext['enabled'] = true;
             }
+            if($column == 'enabled_in_locales') {
+                $tableContext['enabledInLocales'] = true;
+            }
             if($column == 'password') {
                 $tableContext['password'] = true;
+            }
+            if($column == 'view') {
+                $tableContext['view'] = true;
             }
         }
 
@@ -65,10 +76,12 @@ class AdminModelTask extends ModelTask
 
             $tableContext['translationValidation'] = [];
             foreach ($this->translateFields as $translateField) {
-                $tableContext['translationValidation'][$translateField][] =
-                    sprintf("->requirePresence('%s', '%s')", $translateField, 'create');
-                $tableContext['translationValidation'][$translateField][] =
-                    sprintf("->allowEmpty('%s')", $translateField);
+                if(!in_array($translateField, $this->skipValidations)) {
+                    $tableContext['translationValidation'][$translateField][] =
+                        sprintf("->requirePresence('%s', '%s')", $translateField, 'create');
+                    $tableContext['translationValidation'][$translateField][] =
+                        sprintf("->allowEmpty('%s')", $translateField);
+                }
             }
         }
         return $tableContext;
@@ -215,6 +228,35 @@ class AdminModelTask extends ModelTask
 
         //TODO add deleted unique constrain
         return $rules;
+    }
+
+    /**
+     * Generate default multi column rules checker.
+     *
+     * @param \Cake\ORM\Table $model The model to introspect.
+     * @param array $associations The associations for the model.
+     * @return array The rules to be applied.
+     */
+    public function getMultiRules($model, array $associations)
+    {
+        $multiRules = [];
+
+        $schema = $model->schema();
+        foreach ($schema->constraints() as $name) {
+            $constraint = $schema->constraint($name);
+            if ($constraint['type'] !== SchemaTable::CONSTRAINT_UNIQUE) {
+                continue;
+            }
+            if (count($constraint['columns']) > 1) {
+                $multiRules[] = [
+                    'name' => 'isUnique',
+                    'fields' => $constraint['columns'],
+                    'extra' => '[\'allowMultipleNulls\' => false, \'message\' => \'This value is not unique\']',
+                ];
+            }
+        }
+        debug($multiRules);
+        return $multiRules;
     }
 
     /**

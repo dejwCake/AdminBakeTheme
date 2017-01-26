@@ -61,6 +61,18 @@ $compact = ["'" . $singularName . "'"];
             endif;
         endforeach;
 %>
+<% if($enabledInLocales): %>
+        $enabledInLocales = $this->getLocales();
+<%
+        $compact[] = "'enabledInLocales'";
+    endif;
+%>
+<% if($view): %>
+        $views = $this-><%= $currentModelName %>->getViews();
+<%
+        $compact[] = "'views'";
+    endif;
+%>
         $this->set(compact(<%= join(', ', $compact) %>));
         $this->set('_serialize', ['<%=$singularName%>']);
     }

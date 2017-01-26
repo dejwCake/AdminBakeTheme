@@ -43,6 +43,9 @@ use Cake\ORM\Entity;
 <% if ($password): %>
 use Cake\Auth\DefaultPasswordHasher;
 <% endif %>
+<% if ($enabledInLocales): %>
+use Cake\Core\Configure;
+<% endif %>
 <% if (!empty($behaviors['Translate'])): %>
 use Cake\ORM\Behavior\Translate\TranslateTrait;
 <% endif %>
@@ -92,6 +95,28 @@ class <%= $name %> extends Entity
     protected function _setPassword($password)
     {
         return (new DefaultPasswordHasher)->hash($password);
+    }
+<% endif %>
+<% if ($enabledInLocales): %>
+
+    /**
+     * @return string
+     */
+    protected function _getEnabledInLocalesText()
+    {
+        $enabledInLocalesArray = '';
+        if(empty($this->_properties['enabled_in_locales'])) {
+            return $enabledInLocalesArray;
+        }
+        if(!is_array($this->_properties['enabled_in_locales'])) {
+            return $this->_properties['enabled_in_locales'];
+        }
+        foreach (Configure::read('App.supportedLanguages') as $language => $languageSettings) {
+            if(in_array($languageSettings['locale'], $this->_properties['enabled_in_locales'])) {
+                $enabledInLocalesArray[] = $languageSettings['title'];
+            }
+        }
+        return implode(', ', $enabledInLocalesArray);
     }
 <% endif %>
 <% if (empty($accessible) && empty($hidden)): %>

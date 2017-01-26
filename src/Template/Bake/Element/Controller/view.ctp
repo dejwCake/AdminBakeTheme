@@ -8,6 +8,7 @@ $allAssociations = array_merge(
 $allAssociations = collection($allAssociations)->reject(function($association) {
     return (strpos($association, 'I18n') !== false || strpos($association, '_translation') !== false);
 })->toArray();
+$compact = ["'" . $singularName . "'"];
 %>
 
     /**
@@ -29,6 +30,12 @@ $allAssociations = collection($allAssociations)->reject(function($association) {
         ]);
 <% endif %>
 
-        $this->set('<%= $singularName %>', $<%= $singularName %>);
+<% if($view): %>
+        $views = $this-><%= $currentModelName %>->getViews();
+<%
+        $compact[] = "'views'";
+    endif;
+%>
+        $this->set(compact(<%= join(', ', $compact) %>));
         $this->set('_serialize', ['<%= $singularName %>']);
     }

@@ -62,6 +62,10 @@ $ckeditor = false;
 %>
                         echo $this->Form->input('<%= $field %>', ['class' => 'ckeditor']);
 <%
+                            } else if($field == 'enabled_in_locales') {
+%>
+                        echo $this->Form->input('<%= $field %>', ['options' => $enabledInLocales, 'class' => 'select2', 'data-placeholder' => __("Select Locale"), 'multiple' => true, 'required' => false]);
+<%
                             } else {
 %>
                         echo $this->Form->input('<%= $field %>');

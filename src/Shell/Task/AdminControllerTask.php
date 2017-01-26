@@ -48,9 +48,11 @@ class AdminControllerTask extends ControllerTask
         $data += [
             'translation' => !$this->param('no-translation'),
             'sorting' => false,
-            'enabling' => false,
+            'enabled' => false,
+            'enabledInLocales' => false,
             'createdBy' => false,
             'slug' => false,
+            'view' => false,
             'skipAssociations' => [],
         ];
         $modelObj = $data['modelObj'];
@@ -61,7 +63,10 @@ class AdminControllerTask extends ControllerTask
         }
         if(!in_array('enable', $data['actions']) && in_array('enabled', $modelObj->schema()->columns())) {
             $data['actions'][] = 'enable';
-            $data['enabling'] = true;
+            $data['enabled'] = true;
+        }
+        if(in_array('enabled_in_locales', $modelObj->schema()->columns())) {
+            $data['enabledInLocales'] = true;
         }
         if(in_array('created_by', $modelObj->schema()->columns())) {
             $data['createdBy'] = true;
@@ -69,6 +74,9 @@ class AdminControllerTask extends ControllerTask
         }
         if(in_array('slug', $modelObj->schema()->columns())) {
             $data['slug'] = true;
+        }
+        if(in_array('view', $modelObj->schema()->columns())) {
+            $data['view'] = true;
         }
 
         $data['prefix'] = '\\Admin';

@@ -27,6 +27,10 @@ $booleans = collection($fields)->filter(function($field) use ($schema) {
     $type = $schema->columnType($field);
     return in_array($type, ['boolean']);
 })->toArray();
+$arraysToText = collection($fields)->filter(function($field) {
+    return in_array($field, ['enabled_in_locales']);
+})->toArray();
+$mapFields = ['view'];
 %>
 <!-- Content Header (Page header) -->
 <section class="content-header">
@@ -104,6 +108,14 @@ $booleans = collection($fields)->filter(function($field) use ($schema) {
                                 </td>
 <%
                                             }
+                                        } else if (in_array($field, $arraysToText)) {
+%>
+                                <td><?= h($<%= $singularVar %>-><%= $field %>_text) ?></td>
+<%
+                                        } else if (in_array($field, $mapFields)) {
+        %>
+                                <td><?= h($<%= Inflector::pluralize($field) %>[$<%= $singularVar %>-><%= $field %>]) ?></td>
+<%
                                         } else if (!in_array($schema->columnType($field), ['integer', 'biginteger', 'decimal', 'float'])) {
 %>
                                 <td><?= h($<%= $singularVar %>-><%= $field %>) ?></td>

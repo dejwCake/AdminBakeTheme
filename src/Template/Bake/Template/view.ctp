@@ -25,6 +25,9 @@ $groupedFields = collection($fields)
         if (isset($associationFields[$field])) {
             return 'string';
         }
+        if (in_array($field, ['enabled_in_locales'])) {
+            return 'arrayToText';
+        }
         if (in_array($type, ['integer', 'float', 'decimal', 'biginteger'])) {
             return 'number';
         }
@@ -34,10 +37,10 @@ $groupedFields = collection($fields)
         return in_array($type, ['text', 'boolean']) ? $type : 'string';
     })
     ->toArray();
-
-$groupedFields += ['number' => [], 'string' => [], 'boolean' => [], 'date' => [], 'text' => []];
+$groupedFields += ['number' => [], 'string' => [], 'boolean' => [], 'date' => [], 'text' => [], 'arrayToText' => []];
 $pk = "\$$singularVar->{$primaryKey[0]}";
 $hidden = ['password', 'remember_token'];
+$mapFields = ['view'];
 %>
 <section class="content-header">
   <h1>
@@ -88,6 +91,13 @@ $hidden = ['password', 'remember_token'];
                     </dd>
                     <?php endforeach; ?>
 <%
+                                elseif (in_array($field, $mapFields)) :
+%>
+                    <dt><?= __('<%= Inflector::humanize($field) %>') ?></dt>
+                    <dd>
+                        <?= h($<%= Inflector::pluralize($field) %>[$<%= $singularVar %>-><%= $field %>]) ?>
+                    </dd>
+<%
                                 elseif (!in_array($field, $hidden)) :
 %>
                     <dt><?= __('<%= Inflector::humanize($field) %>') ?></dt>
@@ -106,6 +116,17 @@ $hidden = ['password', 'remember_token'];
                     <dt><?= __('<%= Inflector::humanize(Inflector::singularize(Inflector::underscore($alias))) %>') ?></dt>
                     <dd>
                         <?= $<%= $singularVar %>->has('<%= $details['property'] %>') ? $this->Html->link($<%= $singularVar %>-><%= $details['property'] %>-><%= $details['displayField'] %>, ['controller' => '<%= $details['controller'] %>', 'action' => 'view', $<%= $singularVar %>-><%= $details['property'] %>-><%= $details['primaryKey'][0] %>]) : '' ?>
+                    </dd>
+<%
+                        endforeach;
+                    endif;
+
+                    if ($groupedFields['arrayToText']) :
+                        foreach ($groupedFields['arrayToText'] as $field) :
+%>
+                    <dt><?= __('<%= Inflector::humanize($field) %>') ?></dt>
+                    <dd>
+                        <?= $<%= $singularVar %>-><%= $field %>_text ?>
                     </dd>
 <%
                         endforeach;

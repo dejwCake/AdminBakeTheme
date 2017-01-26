@@ -42,6 +42,9 @@ $uses = [
     'use Cake\ORM\Table;',
     'use Cake\Validation\Validator;'
 ];
+if ($enabledInLocales):
+    $uses[] = 'use Cake\Database\Schema\Table as Schema;';
+endif;
 sort($uses);
 echo implode("\n", $uses);
 %>
@@ -190,7 +193,7 @@ endforeach;
         return $validator;
     }
 <% endif %>
-<% if (!empty($rulesChecker)): %>
+<% if (!empty($rulesChecker) || !empty($multiRules)): %>
 
     /**
      * Returns a rules checker object that will be used for validating
@@ -204,8 +207,33 @@ endforeach;
     <%- foreach ($rulesChecker as $field => $rule): %>
         $rules->add($rules-><%= $rule['name'] %>(['<%= $field %>']<%= !empty($rule['extra']) ? ", '$rule[extra]'" : '' %>));
     <%- endforeach; %>
+    <%- foreach ($multiRules as $rule): %>
+        $rules->add($rules-><%= $rule['name'] %>(['<%= implode('\', \'', $rule['fields']) %>']<%= !empty($rule['extra']) ? ", $rule[extra]" : '' %>));
+    <%- endforeach; %>
 
         return $rules;
+    }
+<% endif; %>
+<% if ($enabledInLocales): %>
+
+    /**
+     * @param Schema $schema
+     * @return Schema
+     */
+    protected function _initializeSchema(Schema $schema)
+    {
+        $schema->columnType('enabled_in_locales', 'json');
+        return $schema;
+    }
+<% endif; %>
+<% if ($view): %>
+
+    /**
+     * @return array
+     */
+    public function getViews() {
+        //TODO add return values
+        return ['default' => __('Default')];
     }
 <% endif; %>
 <% if ($connection !== 'default'): %>
