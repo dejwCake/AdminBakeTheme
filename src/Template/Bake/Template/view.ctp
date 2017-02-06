@@ -231,7 +231,7 @@ $mapFields = ['view'];
                                     if (in_array($field, ['created', 'modified', 'deleted', 'password', 'remember_token', 'id'])) { continue; }
 %>
                                     <th>
-                                    <%= Inflector::humanize($field) %>
+                                        <?= __('<%= Inflector::humanize($field) %>') ?>
                                     </th>
 <%
                                     endforeach;

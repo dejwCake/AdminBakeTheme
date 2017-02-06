@@ -35,8 +35,28 @@ $mapFields = ['view'];
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        <%= $pluralHumanName %>
+        <?= __('<%= $pluralHumanName %>'); ?>
+<%
+        if($treeSort):
+%>
+        <div class="pull-right">
+            <?= $this->Html->link(__('Sort'), ['action' => 'treeSort'], ['class' => 'btn btn-info btn-xs']) ?>
+            <?= $this->Html->link(__('New'), ['action' => 'add'], ['class' => 'btn btn-success btn-xs']) ?>
+        </div>
+<%
+        elseif($sort):
+%>
+        <div class="pull-right">
+            <?= $this->Html->link(__('Sort'), ['action' => 'sort'], ['class' => 'btn btn-info btn-xs']) ?>
+            <?= $this->Html->link(__('New'), ['action' => 'add'], ['class' => 'btn btn-success btn-xs']) ?>
+        </div>
+<%
+        else:
+%>
         <div class="pull-right"><?= $this->Html->link(__('New'), ['action' => 'add'], ['class' => 'btn btn-success btn-xs']) ?></div>
+<%
+        endif;
+%>
     </h1>
 </section>
 
@@ -46,7 +66,7 @@ $mapFields = ['view'];
         <div class="col-xs-12">
             <div class="box">
                 <div class="box-header">
-                    <h3 class="box-title"><?= __('List of') ?> <%= $pluralHumanName %></h3>
+                    <h3 class="box-title"><?= __('List of <%= $pluralHumanName %>') ?></h3>
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body">

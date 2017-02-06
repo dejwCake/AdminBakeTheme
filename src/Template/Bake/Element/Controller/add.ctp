@@ -54,9 +54,15 @@ $compact = ["'" . $singularName . "'"];
             if(!in_array($association->foreignKey(), $skipAssociations)):
                 $otherName = $association->target()->alias();
                 $otherPlural = $this->_variableName($otherName);
+                if(strpos($otherName, 'Parent') === false):
 %>
         $<%= $otherPlural %> = $this-><%= $currentModelName %>-><%= $otherName %>->find('list', ['limit' => 200]);
 <%
+                else:
+%>
+        $<%= $otherPlural %> = $this-><%= $currentModelName %>-><%= $otherName %>->find('treeList', ['limit' => 200]);
+<%
+                endif;
                 $compact[] = "'$otherPlural'";
             endif;
         endforeach;

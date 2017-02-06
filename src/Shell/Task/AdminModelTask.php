@@ -16,7 +16,7 @@ class AdminModelTask extends ModelTask
     protected $skipRules = ['entity_id'];
     protected $skipValidations = ['deleted', 'sort', 'enabled', 'entity_class', 'entity_id', 'slug'];
     //TODO add more
-    protected $translatableFields = ['title', 'slug','text', 'short_text', 'description', 'keywords', 'perex'];
+    protected $translatableFields = ['title', 'slug', 'text', 'short_text', 'description', 'keywords', 'perex'];
     protected $translateFields = null;
 
     /**
@@ -124,6 +124,9 @@ class AdminModelTask extends ModelTask
         if (in_array('slug', $fields)) {
             $behaviors['DejwCake/Helpers.Sluggable'] = [];
         }
+        if (in_array('sort', $fields)) {
+            $behaviors['DejwCake/Helpers.Sortable'] = [];
+        }
 
         if (!$this->param('no-translation') && !empty(array_intersect($fields, $this->translatableFields))) {
             $this->translateFields = array_intersect($fields, $this->translatableFields);
@@ -131,6 +134,10 @@ class AdminModelTask extends ModelTask
                 '\'fields\' => [\''.implode('\', \'', $this->translateFields).'\']',
                 '\'translationTable\' => \''.$model->alias().'I18n\'',
             ];
+        }
+
+        if(isset($behaviors['Tree'])) {
+            $behaviors['Tree'] = ['\'recoverOrder\' => [\'left\' => \'ASC\']'];
         }
 
         return $behaviors;
@@ -251,11 +258,10 @@ class AdminModelTask extends ModelTask
                 $multiRules[] = [
                     'name' => 'isUnique',
                     'fields' => $constraint['columns'],
-                    'extra' => '[\'allowMultipleNulls\' => false, \'message\' => \'This value is not unique\']',
+                    'extra' => '[\'allowMultipleNulls\' => false, \'message\' => __(\'This value is not unique\')]',
                 ];
             }
         }
-        debug($multiRules);
         return $multiRules;
     }
 

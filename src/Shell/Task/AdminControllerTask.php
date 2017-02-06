@@ -57,26 +57,35 @@ class AdminControllerTask extends ControllerTask
         ];
         $modelObj = $data['modelObj'];
 
-        if(!in_array('sort', $data['actions']) && in_array('sort', $modelObj->schema()->columns())) {
+        $schema = $modelObj->schema();
+        $fields = $schema->columns();
+        if(!in_array('sort', $data['actions']) && in_array('sort', $fields)) {
             $data['actions'][] = 'sort';
             $data['sorting'] = true;
         }
-        if(!in_array('enable', $data['actions']) && in_array('enabled', $modelObj->schema()->columns())) {
+        if(!in_array('enable', $data['actions']) && in_array('enabled', $fields)) {
             $data['actions'][] = 'enable';
             $data['enabled'] = true;
         }
-        if(in_array('enabled_in_locales', $modelObj->schema()->columns())) {
+        if(in_array('enabled_in_locales', $fields)) {
             $data['enabledInLocales'] = true;
         }
-        if(in_array('created_by', $modelObj->schema()->columns())) {
+        if(in_array('created_by', $fields)) {
             $data['createdBy'] = true;
             $data['skipAssociations'][] = 'created_by';
         }
-        if(in_array('slug', $modelObj->schema()->columns())) {
+        if(in_array('slug', $fields)) {
             $data['slug'] = true;
         }
-        if(in_array('view', $modelObj->schema()->columns())) {
+        if(in_array('view', $fields)) {
             $data['view'] = true;
+        }
+        if (!in_array('treeSort', $data['actions']) &&
+            in_array('lft', $fields) && $schema->columnType('lft') === 'integer' &&
+            in_array('rght', $fields) && $schema->columnType('rght') === 'integer' &&
+            in_array('parent_id', $fields)
+        ) {
+            $data['actions'][] = 'treeSort';
         }
 
         $data['prefix'] = '\\Admin';

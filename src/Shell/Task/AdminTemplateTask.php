@@ -11,9 +11,9 @@ use Cake\ORM\Table;
 class AdminTemplateTask extends TemplateTask
 {
 
-    protected $skipFormFields = ['created_by', 'entity_id', 'entity_class', 'slug', 'lft', 'rght'];
-    protected $skipIndexFields = ['created_by', 'entity_id', 'entity_class'];
-    protected $skipViewFields = [];
+    protected $skipFormFields = ['created_by', 'entity_id', 'entity_class', 'slug', 'lft', 'rght', 'sort'];
+    protected $skipIndexFields = ['created_by', 'entity_id', 'entity_class', 'sort'];
+    protected $skipViewFields = ['lft', 'rght'];
 
     /**
      * Execution method always used for tasks
@@ -28,7 +28,6 @@ class AdminTemplateTask extends TemplateTask
         if (empty($this->param('prefix'))) {
             $this->params['prefix'] = '/Admin';
         }
-
 
         //TODO remove translation associations from $associations
 
@@ -76,6 +75,15 @@ class AdminTemplateTask extends TemplateTask
             }
         }
 
+        $controller['treeSort'] = false;
+        if($controller['modelObject']->behaviors()->has('Tree')) {
+            $controller['treeSort'] = true;
+        }
+        $controller['sort'] = false;
+        if(in_array('sort', $controller['fields'])) {
+            $controller['sort'] = true;
+        }
+
         return $controller;
     }
 
@@ -99,5 +107,25 @@ class AdminTemplateTask extends TemplateTask
         })->toArray();
 
         return $associations;
+    }
+
+    /**
+     * Get a list of actions that can / should have view templates baked for them.
+     *
+     * @return array Array of action names that should be baked
+     */
+    protected function _methodsToBake()
+    {
+        $methods = parent::_methodsToBake();
+
+        $vars = $this->_loadController();
+        if($vars['modelObject']->behaviors()->has('Tree')) {
+            $methods[] = 'treeSort';
+        }
+        if(in_array('sort', $vars['fields'])) {
+            $methods[] = 'sort';
+        }
+
+        return $methods;
     }
 }

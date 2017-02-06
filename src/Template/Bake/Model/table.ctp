@@ -45,6 +45,9 @@ $uses = [
 if ($enabledInLocales):
     $uses[] = 'use Cake\Database\Schema\Table as Schema;';
 endif;
+if (isset($behaviors['Tree'])):
+    $uses[] = 'use DejwCake\Helpers\Model\Table\TreeSortTrait;';
+endif;
 sort($uses);
 echo implode("\n", $uses);
 %>
@@ -54,6 +57,9 @@ echo implode("\n", $uses);
 class <%= $name %>Table extends Table
 {
 
+<% if (isset($behaviors['Tree'])): %>
+    use TreeSortTrait;
+<% endif %>
     /**
      * Initialize method
      *
