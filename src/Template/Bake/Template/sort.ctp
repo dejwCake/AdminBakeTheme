@@ -54,11 +54,11 @@ use Cake\Utility\Inflector;
 </section>
 <!-- /.content -->
 
-<?php $this->start('css'); ?>
+<?php $this->append('css'); ?>
 <?php echo $this->Html->css('https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css'); ?>
 <?php echo $this->Html->css('DejwCake/AdminLTE./plugins/nestedSortable/jquery.mjs.nestedSortable'); ?>
 <?php $this->end(); ?>
-<?php $this->start('scriptBottom'); ?>
+<?php $this->append('scriptBottom'); ?>
 <?php echo $this->Html->script('DejwCake/AdminLTE./plugins/jQueryUI/jquery-ui'); ?>
 <?php echo $this->Html->script('DejwCake/AdminLTE./plugins/nestedSortable/jquery.mjs.nestedSortable'); ?>
 <script>

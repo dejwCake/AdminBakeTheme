@@ -196,10 +196,10 @@ $mapFields = ['view'];
 </section>
 <!-- /.content -->
 
-<?php $this->start('css'); ?>
+<?php $this->append('css'); ?>
 <?php echo $this->Html->css('DejwCake/AdminLTE./plugins/datatables/dataTables.bootstrap.css'); ?>
 <?php $this->end(); ?>
-<?php $this->start('scriptBottom'); ?>
+<?php $this->append('scriptBottom'); ?>
 <?php echo $this->Html->script('DejwCake/AdminLTE./plugins/datatables/jquery.dataTables.min.js'); ?>
 <?php echo $this->Html->script('DejwCake/AdminLTE./plugins/datatables/dataTables.bootstrap.min.js'); ?>
     <script>
