@@ -29,8 +29,6 @@ class AdminTemplateTask extends TemplateTask
             $this->params['prefix'] = '/Admin';
         }
 
-        //TODO remove translation associations from $associations
-
         parent::main($name, $template, $action);
     }
 

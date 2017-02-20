@@ -233,7 +233,6 @@ class AdminModelTask extends ModelTask
             }
         }
 
-        //TODO add deleted unique constrain
         return $rules;
     }
 
