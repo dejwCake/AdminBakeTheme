@@ -209,7 +209,7 @@ $mapFields = ['view'];
 <%
     $relations = $associations['HasMany'] + $associations['BelongsToMany'];
     foreach ($relations as $alias => $details):
-        $otherSingularVar = Inflector::variable($alias);
+        $otherSingularVar = Inflector::singularize(Inflector::variable($alias));
         $otherPluralHumanName = Inflector::humanize(Inflector::underscore($details['controller']));
 %>
     <div class="row">
@@ -220,24 +220,24 @@ $mapFields = ['view'];
                     <h3 class="box-title"><?= __('Related {0}', ['<%= $otherPluralHumanName %>']) ?></h3>
                 </div>
                 <!-- /.box-header -->
-                <div class="box-body table-responsive no-padding">
+                <div class="box-body">
 
                 <?php if (!empty($<%= $singularVar %>-><%= $details['property'] %>)): ?>
-                    <table class="table table-hover">
+                    <table class="table table-bordered table-hover">
                         <tbody>
                             <tr>
 <%
                                 foreach ($details['fields'] as $field):
                                     if (in_array($field, ['created', 'modified', 'deleted', 'password', 'remember_token', 'id'])) { continue; }
 %>
-                                    <th>
-                                        <?= __('<%= Inflector::humanize($field) %>') ?>
-                                    </th>
+                                <th>
+                                    <?= __('<%= Inflector::humanize($field) %>') ?>
+                                </th>
 <%
                                     endforeach;
 %>
                                 <th>
-                                    <?php echo __('Actions'); ?>
+                                    <?= __('Actions'); ?>
                                 </th>
                             </tr>
                             <?php foreach ($<%= $singularVar %>-><%= $details['property'] %> as $<%= $otherSingularVar %>): ?>
@@ -247,16 +247,16 @@ $mapFields = ['view'];
                                         if (in_array($field, ['created', 'modified', 'deleted', 'password', 'remember_token', 'id'])) { continue; }
 %>
                                     <td>
-                                    <?= h($<%= $otherSingularVar %>-><%= $field %>) ?>
+                                        <?= h($<%= $otherSingularVar %>-><%= $field %>) ?>
                                     </td>
 <%
                                     endforeach;
                                     $otherPk = "\${$otherSingularVar}->{$details['primaryKey'][0]}";
 %>
                                     <td class="actions">
-                                    <?= $this->Html->link(__('View'), ['controller' => '<%= $details['controller'] %>', 'action' => 'view', <%= $otherPk %>], ['class'=>'btn btn-info btn-xs']) ?>
-                                    <?= $this->Html->link(__('Edit'), ['controller' => '<%= $details['controller'] %>', 'action' => 'edit', <%= $otherPk %>], ['class'=>'btn btn-warning btn-xs']) ?>
-                                    <?= $this->Form->postLink(__('Delete'), ['controller' => '<%= $details['controller'] %>', 'action' => 'delete', <%= $otherPk %>], ['confirm' => __('Are you sure you want to delete # {0}?', <%= $otherPk %>), 'class'=>'btn btn-danger btn-xs']) ?>
+                                        <?= $this->Html->link(__('View'), ['controller' => '<%= $details['controller'] %>', 'action' => 'view', <%= $otherPk %>], ['class'=>'btn btn-info btn-xs']) ?>
+                                        <?= $this->Html->link(__('Edit'), ['controller' => '<%= $details['controller'] %>', 'action' => 'edit', <%= $otherPk %>], ['class'=>'btn btn-warning btn-xs']) ?>
+                                        <?= $this->Form->postLink(__('Delete'), ['controller' => '<%= $details['controller'] %>', 'action' => 'delete', <%= $otherPk %>], ['confirm' => __('Are you sure you want to delete # {0}?', <%= $otherPk %>), 'class'=>'btn btn-danger btn-xs']) ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
