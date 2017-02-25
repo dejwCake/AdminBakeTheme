@@ -53,10 +53,10 @@ class AdminControllerTask extends ControllerTask
             'createdBy' => false,
             'slug' => false,
             'view' => false,
+            'collection' => false,
             'skipAssociations' => [],
         ];
         $modelObj = $data['modelObj'];
-
         $schema = $modelObj->schema();
         $fields = $schema->columns();
         if(!in_array('sort', $data['actions']) && in_array('sort', $fields)) {
@@ -86,6 +86,9 @@ class AdminControllerTask extends ControllerTask
             in_array('parent_id', $fields)
         ) {
             $data['actions'][] = 'treeSort';
+        }
+        if($modelObj->behaviors()->has('Media')) {
+            $data['collection'] = true;
         }
 
         $data['prefix'] = '\\Admin';

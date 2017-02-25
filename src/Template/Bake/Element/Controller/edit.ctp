@@ -85,6 +85,12 @@ $compact = ["'" . $singularName . "'"];
         $compact[] = "'views'";
     endif;
 %>
+<% if($collection): %>
+        $collections = $this-><%= $currentModelName %>->getMediaCollections();
+<%
+        $compact[] = "'collections'";
+    endif;
+%>
         $this->set(compact(<%= join(', ', $compact) %>));
         $this->set('_serialize', ['<%=$singularName%>']);
     }

@@ -81,6 +81,10 @@ class AdminTemplateTask extends TemplateTask
         if(in_array('sort', $controller['fields'])) {
             $controller['sort'] = true;
         }
+        $controller['media'] = false;
+        if($controller['modelObject']->behaviors()->has('Media')) {
+            $controller['media'] = true;
+        }
 
         return $controller;
     }
