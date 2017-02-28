@@ -234,7 +234,7 @@ $ckeditor = false;
 <%
     if($ckeditor) {
 %>
-<?php echo $this->Html->script('https://cdn.ckeditor.com/4.5.7/standard/ckeditor.js'); ?>
+<?php echo $this->Html->script('DejwCake/AdminLTE./plugins/ckeditor/ckeditor.js'); ?>
     <script type="text/javascript">
         $(function () {
             CKEDITOR.replaceAll('ckeditor');
