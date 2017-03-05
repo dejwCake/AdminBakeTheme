@@ -74,17 +74,6 @@ $ckeditor = false;
                         }
                     }
 %>
-<%
-                    if($media) {
-%>
-
-                        //Media part
-                        echo $this->element('DejwCake/Media.Resource/fetch');
-                        echo $this->element('DejwCake/Media.Form/Template/template_all');
-                        echo $this->element('DejwCake/Media.Form/media_all', ['collections' => $collections, 'object' => $<%= $singularVar %>]);
-<%
-                    }
-%>
                     ?>
 <%
                     if(!empty($translateFields)) {
@@ -211,6 +200,18 @@ $ckeditor = false;
                         }
                     }
 %>
+                    <?php
+<%
+                    if($media) {
+%>
+                        //Media part
+                        echo $this->element('DejwCake/Media.Resource/fetch');
+                        echo $this->element('DejwCake/Media.Form/Template/template_all');
+                        echo $this->element('DejwCake/Media.Form/media_all', ['collections' => $collections, 'object' => $<%= $singularVar %>]);
+<%
+                    }
+%>
+                    ?>
                 </div>
                 <!-- /.box-body -->
                 <div class="box-footer">
