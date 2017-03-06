@@ -31,10 +31,10 @@ $compact = ["'" . $pluralName . "'"];
         if ($this->request->is(['patch', 'post', 'put'])) {
             $items = json_decode($this->request->data('ids'));
             if (!is_array($items)) {
-                throw new BadRequestException(__('You must pass an array to sort'));
+                throw new BadRequestException(__('You must pass an array to sort.'));
             }
             $this-><%= $currentModelName %>->setNewSort($items);
-            $this->Flash->success(__('The <%= strtolower($singularHumanName) %> reorder has been changed.'));
+            $this->Flash->success(__('The <%= strtolower($singularHumanName) %> order has been changed.'));
         }
 
         $this->set(compact(<%= join(', ', $compact) %>));

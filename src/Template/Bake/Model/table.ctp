@@ -43,7 +43,7 @@ $uses = [
     'use Cake\Validation\Validator;'
 ];
 if ($enabledInLocales):
-    $uses[] = 'use Cake\Database\Schema\Table as Schema;';
+    $uses[] = 'use Cake\Database\Schema\TableSchema as Schema;';
 endif;
 if (isset($behaviors['Tree'])):
     $uses[] = 'use DejwCake\Helpers\Model\Table\TreeSortTrait;';

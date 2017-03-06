@@ -4,7 +4,7 @@ namespace DejwCake\AdminBakeTheme\Shell\Task;
 use Bake\Shell\Task\ModelTask;
 use Cake\ORM\Table;
 use Cake\Utility\Inflector;
-use Cake\Database\Schema\Table as SchemaTable;
+use Cake\Database\Schema\TableSchema as SchemaTable;
 
 /**
  * AdminModel shell task.
@@ -186,7 +186,7 @@ class AdminModelTask extends ModelTask
     /**
      * Does individual field validation handling.
      *
-     * @param \Cake\Database\Schema\Table $schema The table schema for the current field.
+     * @param \Cake\Database\Schema\TableSchema $schema The table schema for the current field.
      * @param string $fieldName Name of field to be validated.
      * @param array $metaData metadata for field
      * @param string $primaryKey The primary key field
@@ -257,7 +257,7 @@ class AdminModelTask extends ModelTask
                 $multiRules[] = [
                     'name' => 'isUnique',
                     'fields' => $constraint['columns'],
-                    'extra' => '[\'allowMultipleNulls\' => false, \'message\' => __(\'This value is not unique\')]',
+                    'extra' => '[\'allowMultipleNulls\' => false, \'message\' => __(\'This value is not unique.\')]',
                 ];
             }
         }

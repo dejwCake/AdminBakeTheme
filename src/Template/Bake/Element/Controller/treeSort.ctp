@@ -31,7 +31,7 @@ $compact = ["'" . $pluralName . "'"];
         if ($this->request->is(['patch', 'post', 'put'])) {
             $items = json_decode($this->request->data('ids'));
             $this-><%= $currentModelName %>->setNewTreeSort($items);
-            $this->Flash->success(__('The <%= strtolower($singularHumanName) %> reorder has been changed.'));
+            $this->Flash->success(__('The <%= strtolower($singularHumanName) %> order has been changed.'));
         }
 
         $this->set(compact(<%= join(', ', $compact) %>));
