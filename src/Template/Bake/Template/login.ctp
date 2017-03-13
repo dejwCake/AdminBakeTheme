@@ -17,8 +17,8 @@
 <?= $this->Flash->render('auth') ?>
     <?= $this->Form->create() ?>
     <fieldset>
-        <?= $this->Form->input('email') ?>
-        <?= $this->Form->input('password') ?>
+        <?= $this->Form->input('email', ['label' => __('E-mail')]) ?>
+        <?= $this->Form->input('password', ['label' => __('Password')]) ?>
     </fieldset>
     <?= $this->Form->button(__('Login')); ?>
     <?= $this->Form->end() ?>

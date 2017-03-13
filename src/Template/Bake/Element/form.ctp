@@ -42,11 +42,11 @@ $ckeditor = false;
                             $fieldData = $schema->column($field);
                             if (!empty($fieldData['null'])) {
 %>
-                        echo $this->Form->input('<%= $field %>', ['options' => $<%= $keyFields[$field] %>, 'empty' => true]);
+                        echo $this->Form->input('<%= $field %>', ['options' => $<%= $keyFields[$field] %>, 'empty' => true, 'label' => __('<%= Inflector::humanize(Inflector::underscore($field)) %>')]);
 <%
                             } else {
 %>
-                        echo $this->Form->input('<%= $field %>', ['options' => $<%= $keyFields[$field] %>]);
+                        echo $this->Form->input('<%= $field %>', ['options' => $<%= $keyFields[$field] %>, 'label' => __('<%= Inflector::humanize(Inflector::underscore($field)) %>')]);
 <%
                             }
                             continue;
@@ -55,20 +55,20 @@ $ckeditor = false;
                             $fieldData = $schema->column($field);
                             if (($fieldData['type'] === 'date') && (!empty($fieldData['null']))) {
 %>
-                        echo $this->Form->input('<%= $field %>', ['empty' => true, 'default' => '']);
+                        echo $this->Form->input('<%= $field %>', ['empty' => true, 'default' => '', 'label' => __('<%= Inflector::humanize(Inflector::underscore($field)) %>')]);
 <%
                             } else if(in_array($fieldData['type'], ['text'])) {
                                 $ckeditor = true;
 %>
-                        echo $this->Form->input('<%= $field %>', ['class' => 'ckeditor']);
+                        echo $this->Form->input('<%= $field %>', ['class' => 'ckeditor', 'label' => __('<%= Inflector::humanize(Inflector::underscore($field)) %>')]);
 <%
                             } else if($field == 'enabled_in_locales') {
 %>
-                        echo $this->Form->input('<%= $field %>', ['options' => $enabledInLocales, 'class' => 'select2', 'data-placeholder' => __("Select Locale"), 'multiple' => true, 'required' => false]);
+                        echo $this->Form->input('<%= $field %>', ['options' => $enabledInLocales, 'class' => 'select2', 'data-placeholder' => __("Select Locale"), 'multiple' => true, 'required' => false, 'label' => __('<%= Inflector::humanize(Inflector::underscore($field)) %>')]);
 <%
                             } else {
 %>
-                        echo $this->Form->input('<%= $field %>');
+                        echo $this->Form->input('<%= $field %>', ['label' => __('<%= Inflector::humanize(Inflector::underscore($field)) %>')]);
 <%
                             }
                         }
@@ -107,11 +107,11 @@ $ckeditor = false;
                                             $fieldData = $schema->column($field);
                                             if (!empty($fieldData['null'])) {
 %>
-                                        echo $this->Form->input('<%= $field %>', ['options' => $<%= $keyFields[$field] %>, 'empty' => true]);
+                                        echo $this->Form->input('<%= $field %>', ['options' => $<%= $keyFields[$field] %>, 'empty' => true, 'label' => __('<%= Inflector::humanize(Inflector::underscore($field)) %>')]);
 <%
                                             } else {
 %>
-                                        echo $this->Form->input('<%= $field %>', ['options' => $<%= $keyFields[$field] %>]);
+                                        echo $this->Form->input('<%= $field %>', ['options' => $<%= $keyFields[$field] %>, 'label' => __('<%= Inflector::humanize(Inflector::underscore($field)) %>')]);
 <%
                                             }
                                             continue;
@@ -120,16 +120,16 @@ $ckeditor = false;
                                             $fieldData = $schema->column($field);
                                             if (($fieldData['type'] === 'date') && (!empty($fieldData['null']))) {
 %>
-                                        echo $this->Form->input('<%= $field %>', ['empty' => true, 'default' => '']);
+                                        echo $this->Form->input('<%= $field %>', ['empty' => true, 'default' => '', 'label' => __('<%= Inflector::humanize(Inflector::underscore($field)) %>')]);
 <%
                                             } else if(in_array($fieldData['type'], ['text'])) {
                                                 $ckeditor = true;
 %>
-                                        echo $this->Form->input('<%= $field %>', ['class' => 'ckeditor']);
+                                        echo $this->Form->input('<%= $field %>', ['class' => 'ckeditor', 'label' => __('<%= Inflector::humanize(Inflector::underscore($field)) %>')]);
 <%
                                             } else {
 %>
-                                        echo $this->Form->input('<%= $field %>');
+                                        echo $this->Form->input('<%= $field %>', ['label' => __('<%= Inflector::humanize(Inflector::underscore($field)) %>')]);
 <%
                                             }
                                         }
@@ -150,11 +150,11 @@ $ckeditor = false;
                                             $fieldData = $schema->column($field);
                                             if (!empty($fieldData['null'])) {
 %>
-                                        echo $this->Form->input('_translations.' . $languageSettings['locale'] . '.<%= $field %>', ['options' => $<%= $keyFields[$field] %>, 'empty' => true]);
+                                        echo $this->Form->input('_translations.' . $languageSettings['locale'] . '.<%= $field %>', ['options' => $<%= $keyFields[$field] %>, 'empty' => true, 'label' => __('<%= Inflector::humanize(Inflector::underscore($field)) %>')]);
 <%
                                             } else {
 %>
-                                        echo $this->Form->input('_translations.' . $languageSettings['locale'] . '.<%= $field %>', ['options' => $<%= $keyFields[$field] %>]);
+                                        echo $this->Form->input('_translations.' . $languageSettings['locale'] . '.<%= $field %>', ['options' => $<%= $keyFields[$field] %>, 'label' => __('<%= Inflector::humanize(Inflector::underscore($field)) %>')]);
 <%
                                             }
                                             continue;
@@ -163,16 +163,16 @@ $ckeditor = false;
                                             $fieldData = $schema->column($field);
                                             if (($fieldData['type'] === 'date') && (!empty($fieldData['null']))) {
 %>
-                                        echo $this->Form->input('_translations.' . $languageSettings['locale'] . '.<%= $field %>', ['empty' => true, 'default' => '']);
+                                        echo $this->Form->input('_translations.' . $languageSettings['locale'] . '.<%= $field %>', ['empty' => true, 'default' => '', 'label' => __('<%= Inflector::humanize(Inflector::underscore($field)) %>')]);
 <%
                                             } else if(in_array($fieldData['type'], ['text'])) {
                                                 $ckeditor = true;
 %>
-                                        echo $this->Form->input('_translations.' . $languageSettings['locale'] . '.<%= $field %>', ['class' => 'ckeditor']);
+                                        echo $this->Form->input('_translations.' . $languageSettings['locale'] . '.<%= $field %>', ['class' => 'ckeditor', 'label' => __('<%= Inflector::humanize(Inflector::underscore($field)) %>')]);
 <%
                                             } else {
 %>
-                                        echo $this->Form->input('_translations.' . $languageSettings['locale'] . '.<%= $field %>');
+                                        echo $this->Form->input('_translations.' . $languageSettings['locale'] . '.<%= $field %>', ['label' => __('<%= Inflector::humanize(Inflector::underscore($field)) %>')]);
 <%
                                             }
                                         }
