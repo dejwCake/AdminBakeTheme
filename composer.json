@@ -1,5 +1,5 @@
 {
-    "name": "DejwCake/AdminBakeTheme",
+    "name": "dejw-cake/admin-bake-theme",
     "description": "Bake plugin for CakePHP to scaffold modules",
     "type": "cakephp-plugin",
     "keywords": [
